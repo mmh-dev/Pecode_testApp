@@ -44,29 +44,39 @@ class FragmentHome : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         deleteBtn = view.findViewById(R.id.minus_btn)
 
-        if (FragmentList.fragments.size == 1){
+        if (FragmentList.fragments.size == 1) {
             deleteBtn.visibility = View.GONE
         }
 
         pageNumber = view.findViewById(R.id.page_number)
         pageNumber.text = FragmentList.fragments.size.toString()
 
-
-
-        val notificationLayout  = RemoteViews(context?.packageName, R.layout.notif_layout)
-        notificationLayout.setTextViewText(R.id.notification_title, "Notification " + FragmentList.fragments.size)
+        val notificationLayout = RemoteViews(context?.packageName, R.layout.notif_layout)
+        notificationLayout.setTextViewText(
+            R.id.notification_title,
+            "Notification " + FragmentList.fragments.size
+        )
         notificationLayout.setTextViewText(R.id.notification_text, "You create a notification")
 
-        notificationManager = getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
+        notificationManager = getSystemService(
+            requireContext(),
+            NotificationManager::class.java
+        ) as NotificationManager
         notificationBtn = view.findViewById(R.id.notification_btn)
         notificationBtn.setOnClickListener {
 
             val intent = Intent(requireContext(), MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getActivity(
+                requireContext(),
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                notificationChannel = NotificationChannel(channelId, desc, NotificationManager.IMPORTANCE_HIGH)
+                notificationChannel =
+                    NotificationChannel(channelId, desc, NotificationManager.IMPORTANCE_HIGH)
                 notificationChannel.enableLights(true)
                 notificationChannel.lightColor = Color.GREEN
                 notificationChannel.enableVibration(false)
@@ -74,21 +84,29 @@ class FragmentHome : Fragment() {
 
                 builder = Notification.Builder(requireContext(), channelId)
                     .setContent(notificationLayout)
-                    .setLargeIcon(BitmapFactory.decodeResource(this.resources,R.drawable.notif_icon))
+                    .setLargeIcon(
+                        BitmapFactory.decodeResource(
+                            this.resources,
+                            R.drawable.notif_icon
+                        )
+                    )
                     .setSmallIcon(R.drawable.notif_icon)
                     .setContentIntent(pendingIntent)
-            }
-            else{
+            } else {
 
                 builder = Notification.Builder(requireContext())
                     .setContent(notificationLayout)
-                    .setLargeIcon(BitmapFactory.decodeResource(this.resources,R.drawable.notif_icon))
+                    .setLargeIcon(
+                        BitmapFactory.decodeResource(
+                            this.resources,
+                            R.drawable.notif_icon
+                        )
+                    )
                     .setSmallIcon(R.drawable.notif_icon)
                     .setContentIntent(pendingIntent)
             }
             notificationManager.notify(FragmentList.fragments.size, builder.build())
         }
-
 
         addBtn = view.findViewById(R.id.plus_btn)
 
@@ -96,7 +114,7 @@ class FragmentHome : Fragment() {
             val fragment = FragmentHome()
             FragmentList.add(fragment)
             parentFragmentManager.beginTransaction().apply {
-                replace(R.id.viewPager, fragment)
+                replace(R.id.viewPager, FragmentList.fragments[FragmentList.fragments.size - 1])
                 commit()
             }
             FragmentList.update()
@@ -106,12 +124,12 @@ class FragmentHome : Fragment() {
         deleteBtn.setOnClickListener {
             FragmentList.delete(this)
             parentFragmentManager.beginTransaction().apply {
-                replace(R.id.viewPager, FragmentList.fragments[FragmentList.fragments.size -1])
+                replace(R.id.viewPager, FragmentList.fragments[FragmentList.fragments.size - 1])
                 commit()
             }
             FragmentList.update()
-            FragmentList.switchToPage(FragmentList.fragments.size - 1)
-            notificationManager.cancel(FragmentList.fragments.size)
+//            FragmentList.switchToPage(FragmentList.fragments.size - 1)
+            notificationManager.cancel(FragmentList.fragments.size + 1)
         }
     }
 }
