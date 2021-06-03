@@ -45,27 +45,13 @@ class FragmentHome : Fragment() {
         deleteBtn = view.findViewById(R.id.minus_btn)
 
         if (FragmentList.fragments.size == 1){
-            deleteBtn.visibility = View.INVISIBLE
+            deleteBtn.visibility = View.GONE
         }
 
         pageNumber = view.findViewById(R.id.page_number)
         pageNumber.text = FragmentList.fragments.size.toString()
 
-        addBtn = view.findViewById(R.id.plus_btn)
 
-        addBtn.setOnClickListener {
-            val fragment = BlankFragment()
-            FragmentList.add(fragment)
-            parentFragmentManager.beginTransaction().apply {
-                replace(R.id.viewPager, fragment)
-                commit()
-            }
-            FragmentList.update()
-            FragmentList.switchToPage(FragmentList.fragments.size - 1)
-        }
-        deleteBtn.setOnClickListener {
-
-        }
 
         val notificationLayout  = RemoteViews(context?.packageName, R.layout.notif_layout)
         notificationLayout.setTextViewText(R.id.notification_title, "Notification " + FragmentList.fragments.size)
@@ -101,6 +87,31 @@ class FragmentHome : Fragment() {
                     .setContentIntent(pendingIntent)
             }
             notificationManager.notify(FragmentList.fragments.size, builder.build())
+        }
+
+
+        addBtn = view.findViewById(R.id.plus_btn)
+
+        addBtn.setOnClickListener {
+            val fragment = FragmentHome()
+            FragmentList.add(fragment)
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.viewPager, fragment)
+                commit()
+            }
+            FragmentList.update()
+            FragmentList.switchToPage(FragmentList.fragments.size - 1)
+        }
+
+        deleteBtn.setOnClickListener {
+            FragmentList.delete(this)
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.viewPager, FragmentList.fragments[FragmentList.fragments.size -1])
+                commit()
+            }
+            FragmentList.update()
+            FragmentList.switchToPage(FragmentList.fragments.size - 1)
+            notificationManager.cancel(FragmentList.fragments.size)
         }
     }
 }
